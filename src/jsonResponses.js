@@ -42,6 +42,57 @@ const getUsers = (request, response) => {
 // getting the meta data of users
 const getUsersMeta = (request, response) => respondJSONMeta(request, response, 200);
 
+
+// adding a user
+const addUser = (request, response, body) => {
+
+    // defaults if left empty
+    const responseJSON = {
+        message: "Name and Age are required bucko",
+    };
+
+    // check that both fields have values
+    // if not send back a 400
+    if (!body.name || !body.age) {
+        responseJSON.id = 'missingParams';
+    };
+    // staus code that represents an update
+    let responseCode = 204; // success
+
+    // if the user doesnt exist, create it
+    if (!users[body.name]) {
+        responseCode = 201;
+        users[body.name] = {};
+    }
+
+    // add and/or update the values
+    users[body.name].name = body.name;
+    users[body.age].age = body.age;
+
+
+    // send back a response
+    if (responseCode === 201) {
+        responseJSON.message = "user has been created.";
+        return respondJSON(request, response, 201, responseJSON);
+    };
+
+    // send back the meta data too
+    return respondJSONMeta(request, response, responseCode);
+};
+
+// updating users object
+const updateUser = (request, response) => {
+
+    // create a new user and use the values from the queries
+    const newUser = {
+        name: "",
+        age: 4,
+        createdAt: Date.now(),
+    };
+
+    // return with a 201 (an item has be created)
+    return respondJSON(request, response, 201, newUser);
+}
 // NotFound function
 const notFound = (request, response) => {
 
@@ -62,6 +113,8 @@ module.exports = {
     respondJSON,
     respondJSONMeta,
     getUsers,
+    addUser,
+    updateUser,
     getUsersMeta,
     notFound,
     notFoundMeta,

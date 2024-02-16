@@ -83,6 +83,7 @@ const updateUser = (request, response) => {
         createdAt: Date.now(),
     };
 
+    newUser.message = `User ${newUser.name} has been updated.`;
     users[newUser.createdAt] = newUser;
 
     // return with a 201 (an item has be created)

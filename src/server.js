@@ -64,7 +64,7 @@ const onRequest = (request, response) => {
     console.log(request);
     const parsedURL = url.parse(request.url);
 
-    // check that the method of the request
+    // check the method of the request
     if (request.method === 'POST') {
         handlePost(request, response, parsedURL);
     } else {

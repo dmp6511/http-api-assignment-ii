@@ -35,35 +35,13 @@ const parseBody = (request, response, handler) => {
     });
 };
 
-// buidling the url struct using GET and HEAD
-// const urlStruct = {
-
-//   // GET some data
-//   GET: {
-//     '/': htmlHandler.getIndex,
-//     '/style.css': htmlHandler.getCSS,
-//     '/getUsers': jsonHandler.getUsers,
-//     '/updateUser': jsonHandler.updateUser,
-//     notFound: jsonHandler.notFound,
-//     default: htmlHandler.getIndex,
-//   },
-
-//   HEAD: {
-//     '/getUsers': jsonHandler.getUsersMeta,
-//     notFound: jsonHandler.notFoundMeta,
-//   },
-
-//   POST: {
-//     '/addUser': jsonHandler.addUser,
-//   },
-// };
 
 // POST handler
 const handlePost = (request, response, parsedURL) => {
     if (parsedURL.pathname === '/addUser') {
         parseBody(request, response, jsonHandler.addUser);
     }
-}
+};
 
 // GET handler
 const handleGet = (request, response, parsedURL) => {
@@ -74,7 +52,9 @@ const handleGet = (request, response, parsedURL) => {
         jsonHandler.getUsers(request, response);
     } else if (parsedURL.pathname === '/updateUser') {
         jsonHandler.updateUser(request, response);
-    } else if (parsedURL.pathname) {
+    } else if (parsedURL.pathname === '/notReal') {
+        jsonHandler.notFound(request, response);
+    } else {
         htmlHandler.getIndex(request, response);
     }
 };
@@ -85,14 +65,11 @@ const onRequest = (request, response) => {
     const parsedURL = url.parse(request.url);
 
     // check that the method of the request
-    if (request.method === "POST") {
+    if (request.method === 'POST') {
         handlePost(request, response, parsedURL);
     } else {
         handleGet(request, response, parsedURL);
     }
-
-    // if nothing is found, send back a 404
-    return urlStruct[request.method].notFound(request, response);
 };
 
 // create the server

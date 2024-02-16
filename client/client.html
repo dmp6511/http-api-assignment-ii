@@ -1,18 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <title>Our simple HTTP server</title>
   <link rel="stylesheet" type="text/css" href="/style.css">
-  
+
   <script>
-   // function to send a request
-   const requestUpdate = async (userForm) => {
-    // grab the data fields
-    const url = userForm.quereSelector("#urlField").value;
-    const method = userForm.quereSelector("#methodSelect").value;
-   }
+
+    // response handler function
+    const handleResponse = async (response) => {
+
+      // grab the content area
+      const content = document.querySelector("#content");
+
+      // diplay messages based on the status codes
+      switch (response.status) {
+        case 200:
+          content.innerHTML = `<b> Success! </b>`;
+          break;
+        case 201:
+          content.innerHTML = `<b> Created! </b>`;
+          break;
+
+        case 204:
+          content.innerHTML = `<b> Updated! </b>`;
+          break;
+
+        case 400:
+          content.innerHTML = `<b> Bad Request </b>`;
+          break;
+
+        default: // any others
+          content.innerHTML = `<b> error, code not implemented </b>`;
+          break;
+      };
+
+      // parse the reponse to json and display the message (if possible)
+      let obj = await response.json();
+
+      if (obj.message) {
+        content.innerHTML += `<p> ${obj.message} </p>`;
+      } else {
+        // if nothing else show the meta data
+        content.innerHTML += `<p> Meta data received </p>`;
+      }
+    };
+
+    // sending a POST request
+    const sendPost = async (nameForm) => {
+      // grab the info provided
+      const nameAction = nameForm.getAttribute('action');
+      const nameMethod = nameForm.getAttribute('method');
+      const nameField = document.querySelector("#nameField");
+      const ageField = document.querySelector("#ageField");
+
+      // build a data string in FORM-URLENCODED format
+      const formData = `name=${nameField.value}&age=${ageField.value}`;
+
+
+      // make the fetch request and wait for the response
+      let response = await fetch(nameAction, {
+        method: nameMethod,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json'
+        },
+        body: formData
+      });
+      handleResponse(response);
+    }
+
+    // init function
+    const init = () => {
+
+      const nameForm = document.querySelector("#nameForm");
+
+      // cancelling the forms original action when a new form is submitted
+      const addUser = (e) => {
+        e.preventDefault();
+        sendPost(nameForm);
+        return false;
+      }
+
+      // event listener
+      nameForm.addEventListener('submit', addUser);
+    }
+
+    window.onload = init;
   </script>
 </head>
+
 <body>
   <section id="top">
     <h3>POST Status Code Tests</h3>
@@ -20,7 +97,7 @@
       <label for="name">Name: </label>
       <input id="nameField" type="text" name="name" />
       <label for="age">Age: </label>
-      <input id="ageField" type="number" name="age" min="0" max="100" step="1"/>
+      <input id="ageField" type="number" name="age" min="0" max="100" step="1" />
       <input type="submit" value="Add User" />
     </form>
     <form id="userForm" action="/getUsers" method="get">
@@ -38,4 +115,5 @@
   <section id="content">
   </section>
 </body>
+
 </html>

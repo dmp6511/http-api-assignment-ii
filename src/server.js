@@ -5,7 +5,6 @@ const url = require('url');
 // handlers
 const jsonHandler = require('./jsonResponses');
 const htmlHandler = require('./htmlResponses');
-const { parse } = require('path');
 
 // port
 const port = process.env.PORT || process.env.NODE_PORT || 3000;
@@ -24,7 +23,8 @@ const urlStruct = {
     },
 
     HEAD: {
-
+        '/getUsers': jsonHandler.getUsersMeta,
+        notFound: jsonHandler.notFoundMeta
     }
 }
 

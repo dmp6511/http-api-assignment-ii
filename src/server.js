@@ -12,67 +12,77 @@ const port = process.env.PORT || process.env.NODE_PORT || 3000;
 
 // requesting the body before we handle it
 const parseBody = (request, response, handler) => {
-    const body = [];
+  const body = [];
 
-    // if there's a bad request error
-    request.on('error', (err) => {
-        console.dir(err);
-        response.statusCode = 400;
-        response.end();
-    });
+  // if there's a bad request error
+  request.on('error', (err) => {
+    console.dir(err);
+    response.statusCode = 400;
+    response.end();
+  });
 
-    // used whenever we get a 'chunk' of data
-    request.on('data', (chunk) => {
-        body.push(chunk); // will push the chunks together in received order
-    });
+  // used whenever we get a 'chunk' of data
+  request.on('data', (chunk) => {
+    body.push(chunk); // will push the chunks together in received order
+  });
 
-    // turns the body array into a string when the request is finished
-    request.on('end', () => {
-        const bodyString = Buffer.concat(body).toString();
-        const bodyParams = query.parse(bodyString);
+  // turns the body array into a string when the request is finished
+  request.on('end', () => {
+    const bodyString = Buffer.concat(body).toString();
+    const bodyParams = query.parse(bodyString);
 
-        handler(request, response, bodyParams);
-    });
+    handler(request, response, bodyParams);
+  });
 };
-
 
 // POST handler
 const handlePost = (request, response, parsedURL) => {
-    if (parsedURL.pathname === '/addUser') {
-        parseBody(request, response, jsonHandler.addUser);
-    }
+  if (parsedURL.pathname === '/addUser') {
+    parseBody(request, response, jsonHandler.addUser);
+  }
 };
 
 // GET handler
 const handleGet = (request, response, parsedURL) => {
-    // route to all the predetermined pathnames
-    if (parsedURL.pathname === '/style.css') {
-        htmlHandler.getCSS(request, response);
-    } else if (parsedURL.pathname === '/getUsers') {
-        jsonHandler.getUsers(request, response);
-    } else if (parsedURL.pathname === '/updateUser') {
-        jsonHandler.updateUser(request, response);
-    } else if (parsedURL.pathname === '/notReal') {
-        jsonHandler.notFound(request, response);
-    } else {
-        htmlHandler.getIndex(request, response);
-    }
+  // route to all the predetermined pathnames
+  if (parsedURL.pathname === '/style.css') {
+    htmlHandler.getCSS(request, response);
+  } else if (parsedURL.pathname === '/getUsers') {
+    jsonHandler.getUsers(request, response);
+  } else if (parsedURL.pathname === '/updateUser') {
+    jsonHandler.updateUser(request, response);
+  } else if (parsedURL.pathname === '/notReal') {
+    jsonHandler.notFound(request, response);
+  } else {
+    htmlHandler.getIndex(request, response);
+  }
 };
+
+
+const handleHead = (request, response, parsedURL) => {
+  if (parsedURL.pathname === '/getUsers') {
+    jsonHandler.getUsersMeta(request, response);
+  } else if (parsedURL.pathname === '/notReal') {
+    jsonHandler.notFoundMeta(request, response);
+  }
+}
 
 // onRequest
 const onRequest = (request, response) => {
-    console.log(request);
-    const parsedURL = url.parse(request.url);
+  console.log(request);
+  const parsedURL = url.parse(request.url);
 
-    // check the method of the request
-    if (request.method === 'POST') {
-        handlePost(request, response, parsedURL);
-    } else {
-        handleGet(request, response, parsedURL);
-    }
+  // check the method of the request
+  if (request.method === 'POST') {
+    handlePost(request, response, parsedURL);
+  } else if (request.method === 'HEAD') {
+    handleHead(request, response, parsedURL);
+  } else {
+    handleGet(request, response, parsedURL);
+  }
 };
 
 // create the server
 http.createServer(onRequest).listen(port, () => {
-    console.log(`Listening on 127.0.01:${port}`);
+  console.log(`Listening on 127.0.01:${port}`);
 });

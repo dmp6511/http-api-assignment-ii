@@ -7,7 +7,7 @@
     "start": "node ./src/server.js",
     "pretest": "eslint ./src --fix",
     "test": "echo yarr this be a test",
-    "nodemon": "nodemon --watch ./src ./src/server.js"
+    "nodemon": "nodemon --watch ./src --watch ./client ./src/server.js"
   },
   "author": "De'Andre Perry",
   "license": "UNLICENSED",

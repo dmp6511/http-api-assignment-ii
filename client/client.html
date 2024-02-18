@@ -26,12 +26,17 @@
           content.innerHTML = `<b> Updated! </b>`;
           break;
 
+        case 404:
+          content.innerHTML = `<b> Not Found </b>`;
+          break;
+
         case 400:
           content.innerHTML = `<b> Bad Request </b>`;
           break;
 
+
         default: // any others
-          content.innerHTML = `<b> error, code not implemented </b>`;
+          content.innerHTML = `< b > error, code not implemented </b > `;
           break;
       };
 
@@ -39,10 +44,10 @@
       let obj = await response.json();
 
       if (obj.message) {
-        content.innerHTML += `<p> ${obj.message} </p>`;
+        content.innerHTML += `<p> ${obj.message} </p> `;
       } else {
         // if nothing else show that meta data was received
-        content.innerHTML += `<p> Meta data received </p>`;
+        content.innerHTML += `<p> Meta data received </p> `;
       }
     };
 
@@ -80,7 +85,7 @@
         e.preventDefault();
         sendPost(nameForm);
         return false;
-      }
+      };
 
       // event listener
       nameForm.addEventListener('submit', addUser);
